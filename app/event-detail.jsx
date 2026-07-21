@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Alert,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import { supabase } from '../services/supabase';
 
@@ -72,11 +73,21 @@ export default function EventDetailScreen({ route, navigation }) {
 
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.header}>
+      {/* Image de couverture */}
+      {event.cover_url ? (
+        <Image source={{ uri: event.cover_url }} style={styles.coverImage} />
+      ) : (
+        <View style={styles.coverPlaceholder}>
+          <Text style={styles.coverPlaceholderText}>🎫</Text>
+        </View>
+      )}
+
+      <View style={styles.backButtonContainer}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Text style={styles.backText}>← Retour</Text>
         </TouchableOpacity>
       </View>
+
       <View style={styles.eventInfo}>
         <Text style={styles.category}>{event.category}</Text>
         <Text style={styles.title}>{event.title}</Text>
@@ -92,6 +103,7 @@ export default function EventDetailScreen({ route, navigation }) {
           </Text>
         </View>
       </View>
+
       <View style={styles.ticketsSection}>
         <Text style={styles.sectionTitle}>Types de billets</Text>
         {ticketTypes.length === 0 ? (
@@ -113,6 +125,7 @@ export default function EventDetailScreen({ route, navigation }) {
           ))
         )}
       </View>
+
       {selectedTicket && (
         <View style={styles.quantitySection}>
           <Text style={styles.sectionTitle}>Quantité</Text>
@@ -128,6 +141,7 @@ export default function EventDetailScreen({ route, navigation }) {
           <Text style={styles.total}>Total: {(selectedTicket.price * quantity).toLocaleString()} FCFA</Text>
         </View>
       )}
+
       <TouchableOpacity style={styles.buyButton} onPress={handleBuyTicket}>
         <Text style={styles.buyButtonText}>🎟️ Acheter les billets</Text>
       </TouchableOpacity>
@@ -138,8 +152,15 @@ export default function EventDetailScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f5f5f5' },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  header: { padding: 16, paddingTop: 48, backgroundColor: '#fff' },
-  backButton: { padding: 8 },
+  coverImage: { width: '100%', height: 250 },
+  coverPlaceholder: {
+    width: '100%', height: 200,
+    backgroundColor: '#EEE9FF',
+    justifyContent: 'center', alignItems: 'center',
+  },
+  coverPlaceholderText: { fontSize: 60 },
+  backButtonContainer: { backgroundColor: '#fff', paddingHorizontal: 16, paddingTop: 12 },
+  backButton: { padding: 8, alignSelf: 'flex-start' },
   backText: { color: '#6C47FF', fontSize: 16 },
   eventInfo: { backgroundColor: '#fff', padding: 24, marginBottom: 12 },
   category: { color: '#6C47FF', fontWeight: '600', marginBottom: 8 },

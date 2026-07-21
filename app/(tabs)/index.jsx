@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   Animated,
+  Image,
 } from 'react-native';
 import { supabase } from '../../services/supabase';
 import { colors, categoryColors, spacing, radius, typography } from '../../constants/theme';
@@ -42,7 +43,13 @@ function AnimatedCard({ item, index, onPress }) {
         onPressOut={handlePressOut}
         activeOpacity={1}
       >
-        <View style={[styles.cardAccent, { backgroundColor: catColor }]} />
+        {item.cover_url ? (
+          <Image source={{ uri: item.cover_url }} style={styles.cardImage} />
+        ) : (
+          <View style={[styles.cardImagePlaceholder, { backgroundColor: catColor + '22' }]}>
+            <Text style={styles.cardImagePlaceholderText}>🎫</Text>
+          </View>
+        )}
         <View style={styles.cardBody}>
           <View style={[styles.categoryPill, { backgroundColor: catColor + '1A' }]}>
             <Text style={[styles.categoryText, { color: catColor }]}>
@@ -78,6 +85,13 @@ export default function HomeScreen({ navigation }) {
 
   async function fetchEvents() {
     try {
+      // Mettre à jour automatiquement les événements expirés
+      await supabase
+        .from('events')
+        .update({ status: 'ended' })
+        .in('status', ['published', 'live'])
+        .lt('date', new Date().toISOString());
+
       const { data, error } = await supabase
         .from('events')
         .select('*')
@@ -140,7 +154,6 @@ const styles = StyleSheet.create({
   title: { ...typography.display, color: colors.text, lineHeight: 36 },
   list: { paddingHorizontal: spacing.lg, paddingBottom: spacing.xl, gap: spacing.md },
   card: {
-    flexDirection: 'row',
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
     overflow: 'hidden',
@@ -152,8 +165,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
-  cardAccent: { width: 6 },
-  cardBody: { flex: 1, padding: spacing.md },
+  cardImage: { width: '100%', height: 180 },
+  cardImagePlaceholder: {
+    width: '100%', height: 120,
+    justifyContent: 'center', alignItems: 'center',
+  },
+  cardImagePlaceholderText: { fontSize: 40 },
+  cardBody: { padding: spacing.md },
   categoryPill: { alignSelf: 'flex-start', paddingHorizontal: spacing.sm, paddingVertical: 4, borderRadius: radius.full, marginBottom: spacing.sm },
   categoryText: { ...typography.caption, fontWeight: '700' },
   eventTitle: { ...typography.title, color: colors.text, marginBottom: spacing.sm },
