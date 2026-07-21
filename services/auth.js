@@ -1,9 +1,5 @@
 import { supabase } from './supabase';
 
-function wait(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 export async function signUp({ phone, countryCode, fullName, email, password, role }) {
   const fullPhone = countryCode.replace(/[^+0-9]/g, '') + phone;
 
@@ -23,32 +19,19 @@ export async function signUp({ phone, countryCode, fullName, email, password, ro
   if (error) throw error;
 
   if (data.user) {
-    // Vérifier activement que la session est prête, jusqu'à 5 fois
-    let sessionReady = false;
-    for (let i = 0; i < 5; i++) {
-      const { data: sessionData } = await supabase.auth.getSession();
-      if (sessionData?.session) {
-        sessionReady = true;
-        break;
-      }
-      await wait(400);
-    }
-
-    if (!sessionReady) {
-      console.log('Session jamais prête, tentative d\'insert quand même');
-    }
-
-    const { error: profileError } = await supabase.from('profiles').upsert({
-      id: data.user.id,
-      full_name: fullName,
-      phone: fullPhone,
-      country_code: countryCode,
-      role,
+    // Utiliser l'Edge Function pour créer le profil (contourne le RLS)
+    const { error: fnError } = await supabase.functions.invoke('create-profile', {
+      body: {
+        id: data.user.id,
+        full_name: fullName,
+        phone: fullPhone,
+        country_code: countryCode,
+        role,
+      },
     });
 
-    if (profileError) {
-      console.log('Erreur création profil:', JSON.stringify(profileError));
-      throw new Error('Compte créé mais profil non enregistré (' + profileError.message + ')');
+    if (fnError) {
+      console.log('Erreur Edge Function:', JSON.stringify(fnError));
     }
   }
 
