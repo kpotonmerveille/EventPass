@@ -33,6 +33,7 @@ export default function LoginScreen({ navigation }) {
     <View style={styles.container}>
       <Text style={styles.title}>EventPass</Text>
       <Text style={styles.subtitle}>Connexion</Text>
+
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -41,6 +42,7 @@ export default function LoginScreen({ navigation }) {
         keyboardType="email-address"
         autoCapitalize="none"
       />
+
       <TextInput
         style={styles.input}
         placeholder="Mot de passe"
@@ -48,10 +50,28 @@ export default function LoginScreen({ navigation }) {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
-        <Text style={styles.buttonText}>{loading ? 'Connexion...' : 'Se connecter'}</Text>
+
+      <TouchableOpacity
+        onPress={() => navigation.navigate('ForgotPassword')}
+        style={styles.forgotButton}
+      >
+        <Text style={styles.forgotText}>Mot de passe oublié ?</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.registerButton} onPress={() => navigation.navigate('Register')}>
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handleLogin}
+        disabled={loading}
+      >
+        <Text style={styles.buttonText}>
+          {loading ? 'Connexion...' : 'Se connecter'}
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.registerButton}
+        onPress={() => navigation.navigate('Register')}
+      >
         <Text style={styles.registerText}>Pas de compte ? S'inscrire</Text>
       </TouchableOpacity>
     </View>
@@ -63,6 +83,8 @@ const styles = StyleSheet.create({
   title: { fontSize: 32, fontWeight: 'bold', color: '#6C47FF', textAlign: 'center', marginBottom: 8 },
   subtitle: { fontSize: 18, color: '#666', textAlign: 'center', marginBottom: 32 },
   input: { borderWidth: 1, borderColor: '#ddd', borderRadius: 12, padding: 16, marginBottom: 16, fontSize: 16 },
+  forgotButton: { alignSelf: 'flex-end', marginBottom: 16 },
+  forgotText: { color: '#6C47FF', fontSize: 14 },
   button: { backgroundColor: '#6C47FF', padding: 16, borderRadius: 12, alignItems: 'center' },
   buttonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
   registerButton: { marginTop: 16, alignItems: 'center' },

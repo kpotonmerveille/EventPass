@@ -8,6 +8,7 @@ import { supabase } from './services/supabase';
 
 import LoginScreen from './app/(auth)/login';
 import RegisterScreen from './app/(auth)/register';
+import ForgotPasswordScreen from './app/(auth)/forgot-password';
 import HomeScreen from './app/(tabs)/index';
 import ExploreScreen from './app/(tabs)/explore';
 import TicketsScreen from './app/(tabs)/tickets';
@@ -80,6 +81,7 @@ export default function App() {
           <>
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
+            <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
           </>
         )}
       </Stack.Navigator>
